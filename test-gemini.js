@@ -1,5 +1,4 @@
-require("dotenv").config();
-
+import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
@@ -8,14 +7,24 @@ const ai = new GoogleGenAI({
 
 async function main() {
     try {
+        console.log("Sending request to Gemini...");
+
         const response = await ai.models.generateContent({
             model: "gemini-3.8-flash",
-            contents: "Hello! Introduce yourself in one sentence."
+            contents: "Hello! Introduce yourself in one short sentence.",
+            config: {
+                thinkingConfig: {
+                    thinkingLevel: "low"
+                }
+            }
         });
 
+        console.log("\nGemini:");
         console.log(response.text);
+
     } catch (error) {
-        console.error("Gemini API Error:", error.message);
+        console.error("\nGemini API Error:");
+        console.error(error.message);
     }
 }
 
