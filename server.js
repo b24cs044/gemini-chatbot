@@ -6,15 +6,30 @@ const app = express();
 
 const PORT = 3000;
 
-// Create Gemini client
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
+const SYSTEM_PROMPT = `
+You are StudyBuddy, a helpful and friendly AI tutor.
+
+Your goal is to help students understand concepts clearly.
+
+Follow these guidelines:
+- Explain concepts in simple and clear language.
+- Give examples when they are useful.
+- Break difficult topics into smaller steps.
+- Encourage the student to ask questions.
+- Do not unnecessarily make answers complicated.
+`;
+
+// Store conversations in server memory
+const conversations = new Map();
+
 // Middleware
 app.use(express.json());
 
-// Test route
+// Home route
 app.get("/", (req, res) => {
   res.send("Gemini Chatbot server is running!");
 });
@@ -22,26 +37,57 @@ app.get("/", (req, res) => {
 // Chat endpoint
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { conversationId, message } = req.body;
 
-    // Validate message
-    if (!message) {
+    // Validate request
+    if (!conversationId || !message) {
       return res.status(400).json({
-        error: "Message is required."
+        error: "conversationId and message are required."
       });
     }
 
+    console.log(`Conversation: ${conversationId}`);
     console.log("User:", message);
 
-    // Send message to Gemini
+    // Create conversation if it doesn't exist
+    if (!conversations.has(conversationId)) {
+      conversations.set(conversationId, []);
+    }
+
+    const history = conversations.get(conversationId);
+
+    // Add user's message to conversation history
+    history.push({
+      role: "user",
+      parts: [
+        {
+          text: message
+        }
+      ]
+    });
+
+    // Send conversation history to Gemini
     const response = await ai.models.generateContent({
       model: "gemini-3.8-flash",
-      contents: message
+      contents: history,
+      config: {
+        systemInstruction: SYSTEM_PROMPT
+      }
     });
 
     console.log("Gemini:", response.text);
 
-    // Send Gemini response back to client
+    // Add Gemini's response to conversation history
+    history.push({
+      role: "model",
+      parts: [
+        {
+          text: response.text
+        }
+      ]
+    });
+
+    // Send response to client
     res.json({
       reply: response.text
     });
