@@ -10,7 +10,7 @@ async function main() {
         console.log("Sending request to Gemini...");
 
         const response = await ai.models.generateContent({
-            model: "gemini-3.8-flash",
+            model: "gemini-3.6-flash",
             contents: "Hello! Introduce yourself in one short sentence.",
             config: {
                 thinkingConfig: {

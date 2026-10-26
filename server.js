@@ -26,6 +26,9 @@ Follow these guidelines:
 // Store conversations in server memory
 const conversations = new Map();
 
+// Maximum number of messages sent to Gemini
+const MAX_HISTORY_MESSAGES = 10;
+
 // Middleware
 app.use(express.json());
 
@@ -66,10 +69,17 @@ app.post("/api/chat", async (req, res) => {
       ]
     });
 
-    // Send conversation history to Gemini
+    // Keep only recent messages for Gemini
+    const recentHistory = history.slice(-MAX_HISTORY_MESSAGES);
+
+    console.log(
+      `Sending ${recentHistory.length} messages to Gemini.`
+    );
+
+    // Send recent conversation history to Gemini
     const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: history,
+      model: "gemini-3.6-flash",
+      contents: recentHistory,
       config: {
         systemInstruction: SYSTEM_PROMPT
       }
@@ -77,7 +87,7 @@ app.post("/api/chat", async (req, res) => {
 
     console.log("Gemini:", response.text);
 
-    // Add Gemini's response to conversation history
+    // Add Gemini's response to full conversation history
     history.push({
       role: "model",
       parts: [
@@ -95,7 +105,16 @@ app.post("/api/chat", async (req, res) => {
   } catch (error) {
     console.error("Gemini API Error:", error);
 
-    res.status(500).json({
+    // Remove the user's message if Gemini failed
+    history.pop();
+
+    if (error.status === 503) {
+      return res.status(503).json({
+        error: "Gemini is temporarily unavailable due to high demand. Please try again."
+      });
+    }
+
+    return res.status(500).json({
       error: "Failed to generate a response."
     });
   }

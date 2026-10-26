@@ -1,25 +1,38 @@
 const conversationId = "test-conversation-1";
 
 async function sendMessage(message) {
-  const response = await fetch("http://localhost:3000/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      conversationId,
-      message
-    })
-  });
+  try {
+    const response = await fetch("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        conversationId,
+        message
+      })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  console.log("\nUser:", message);
-  console.log("StudyBuddy:", data.reply);
+    console.log("\nUser:", message);
+
+    if (!response.ok) {
+      console.log("Server Error:", data.error);
+      return;
+    }
+
+    console.log("StudyBuddy:", data.reply);
+
+  } catch (error) {
+    console.error("\nRequest failed:", error.message);
+  }
 }
 
 await sendMessage("My name is Rahul.");
 
 await sendMessage("What is my name?");
 
-await sendMessage("Can you explain why remembering information across messages is useful in a chatbot?");
+await sendMessage(
+  "Explain why conversation memory is useful in a chatbot."
+);
