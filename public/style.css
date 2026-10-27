@@ -1,0 +1,379 @@
+/* StudyBuddy chat UI. Plain CSS, no frameworks. */
+
+:root {
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --ink: #1b2430;
+  --ink-soft: #5b6676;
+  --line: #d5dce5;
+  --accent: #1f5c7a;
+  --accent-dark: #174860;
+  --user-bubble: #1f5c7a;
+  --user-text: #ffffff;
+  --bot-bubble: #f3f6f9;
+  --error-bg: #fbeceb;
+  --error-line: #e3b3af;
+  --error-text: #8a2a22;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  justify-content: center;
+}
+
+/* Main column: full height on phones, a centered card on larger screens. */
+.app {
+  width: 100%;
+  max-width: 760px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+@media (min-width: 800px) {
+  body {
+    padding: 24px;
+  }
+
+  .app {
+    height: calc(100% - 0px);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+}
+
+/* Header */
+.app-header {
+  padding: 14px 20px;
+  background: var(--accent);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.app-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Scrollable message area */
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth;
+}
+
+.message {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.message-author {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--ink-soft);
+}
+
+.message-text {
+  white-space: pre-wrap;
+}
+
+/* StudyBuddy messages: left aligned */
+.message.bot {
+  align-self: flex-start;
+  background: var(--bot-bubble);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 3px;
+}
+
+/* User messages: right aligned */
+.message.user {
+  align-self: flex-end;
+  background: var(--user-bubble);
+  color: var(--user-text);
+  border-bottom-right-radius: 3px;
+}
+
+.message.user .message-author {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: right;
+}
+
+/* Error messages shown in the chat */
+.message.error {
+  align-self: flex-start;
+  background: var(--error-bg);
+  border: 1px solid var(--error-line);
+  color: var(--error-text);
+  border-bottom-left-radius: 3px;
+}
+
+.message.error .message-author {
+  color: var(--error-text);
+}
+
+/* Loading indicator */
+.message.loading .message-text {
+  color: var(--ink-soft);
+}
+
+.dots span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-left: 3px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Input area */
+.chat-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.chat-form textarea {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  max-height: 140px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.chat-form textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+
+.chat-form button {
+  padding: 10px 20px;
+  font: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-form button:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.chat-form button:focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.chat-form button:disabled,
+.chat-form textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .chat-window {
+    padding: 14px 12px;
+  }
+
+  .message {
+    max-width: 92%;
+  }
+
+  .chat-form {
+    padding: 10px 12px;
+  }
+
+  .chat-form button {
+    padding: 10px 16px;
+  }
+
+  /* 16px input text stops iOS Safari from zooming in on focus */
+  .chat-form textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-window {
+    scroll-behavior: auto;
+  }
+
+  .dots span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Rendered Markdown inside StudyBuddy replies */
+.message-text.markdown {
+  white-space: normal;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p {
+  margin: 0 0 0.75em;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  margin: 1em 0 0.4em;
+  line-height: 1.3;
+}
+
+.markdown h1 { font-size: 1.25rem; }
+.markdown h2 { font-size: 1.15rem; }
+.markdown h3,
+.markdown h4 { font-size: 1.05rem; }
+
+.markdown ul,
+.markdown ol {
+  margin: 0 0 0.75em;
+  padding-left: 1.5em;
+}
+
+.markdown li {
+  margin: 0.25em 0;
+}
+
+.markdown li > p {
+  margin: 0;
+}
+
+.markdown strong {
+  font-weight: 650;
+}
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 1em 0;
+}
+
+.markdown a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.markdown blockquote {
+  margin: 0 0 0.75em;
+  padding: 0.1em 0 0.1em 12px;
+  border-left: 3px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88em;
+  padding: 0.12em 0.35em;
+  background: #e4eaf0;
+  border-radius: 4px;
+}
+
+.markdown pre {
+  margin: 0 0 0.75em;
+  padding: 12px 14px;
+  background: #18212b;
+  color: #e6edf3;
+  border-radius: 8px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.markdown pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+/* Tables scroll inside the message instead of widening the page */
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0 0 0.75em;
+}
+
+.markdown th,
+.markdown td {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.markdown th {
+  background: #e9eef3;
+}

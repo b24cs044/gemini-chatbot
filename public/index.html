@@ -1,5 +1,41 @@
 <!DOCTYPE html>
-<html>
-<head><title>StudyBuddy</title></head>
-<body><h1>Server is running</h1></body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyBuddy - AI Tutor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="app-header">
+      <h1>StudyBuddy</h1>
+      <p>AI Tutor</p>
+    </header>
+
+    <main id="chat-window" class="chat-window" aria-live="polite">
+      <!-- Messages are appended here by script.js. The first one is a static greeting. -->
+      <div class="message bot">
+        <div class="message-author">StudyBuddy</div>
+        <div class="message-text">Hi! I'm StudyBuddy. How can I help you learn today?</div>
+      </div>
+    </main>
+
+    <form id="chat-form" class="chat-form" autocomplete="off">
+      <textarea
+        id="user-input"
+        rows="1"
+        placeholder="Ask StudyBuddy something..."
+        aria-label="Your message"
+      ></textarea>
+      <button type="submit" id="send-button">Send</button>
+    </form>
+
+  </div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/purify.min.js"></script>
+  <script src="script.js" defer></script>
+</body>
 </html>
